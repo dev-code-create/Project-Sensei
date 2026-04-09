@@ -28,37 +28,35 @@ const Login = () => {
   };
 
   return (
-    <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+    <div className="flex min-h-[80vh] items-center justify-center px-6 py-12">
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="glass" 
-        style={{ padding: '3rem', width: '100%', maxWidth: '450px' }}
+        className="glass w-full max-w-[450px] p-8 md:p-12"
       >
-        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <div style={{ background: 'rgba(139, 92, 246, 0.1)', width: '60px', height: '60px', borderRadius: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-            <LogIn color="#8b5cf6" size={30} />
+        <div className="mb-10 text-center">
+          <div className="mx-auto mb-6 flex h-[60px] w-[60px] items-center justify-center rounded-2xl bg-sensai-primary/10">
+            <LogIn className="text-sensai-primary" size={30} />
           </div>
-          <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Welcome Back</h2>
-          <p style={{ color: 'var(--text-muted)' }}>Enter your credentials to access your dashboard</p>
+          <h2 className="mb-2 text-3xl font-bold text-white">Welcome Back</h2>
+          <p className="text-sensai-muted">Enter your credentials to access your dashboard</p>
         </div>
 
         {error && (
-          <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#fca5a5' }}>
+          <div className="mb-6 flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-300">
             <AlertCircle size={18} />
-            <span style={{ fontSize: '0.9rem' }}>{error}</span>
+            <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <label style={{ fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-muted)' }}>Email Address</label>
-            <div style={{ position: 'relative' }}>
-              <Mail size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-sensai-muted">Email Address</label>
+            <div className="relative">
+              <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-sensai-muted" />
               <input 
                 type="email" 
-                className="input-field" 
-                style={{ paddingLeft: '48px' }}
+                className="input-field pl-12"
                 placeholder="founder@startup.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -67,14 +65,13 @@ const Login = () => {
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <label style={{ fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-muted)' }}>Password</label>
-            <div style={{ position: 'relative' }}>
-              <Lock size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-sensai-muted">Password</label>
+            <div className="relative">
+              <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-sensai-muted" />
               <input 
                 type="password" 
-                className="input-field" 
-                style={{ paddingLeft: '48px' }}
+                className="input-field pl-12"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -85,16 +82,15 @@ const Login = () => {
 
           <button 
             type="submit" 
-            className="btn-primary" 
-            style={{ width: '100%', marginTop: '1rem' }}
+            className="btn-primary mt-4 w-full"
             disabled={loading}
           >
             {loading ? 'Signing in...' : 'Sign In'} <ArrowRight size={18} />
           </button>
         </form>
 
-        <p style={{ marginTop: '2rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-          Don't have an account? <Link to="/register" style={{ color: 'var(--accent-primary)', textDecoration: 'none', fontWeight: '600' }}>Register now</Link>
+        <p className="mt-8 text-center text-sm text-sensai-muted">
+          Don't have an account? <Link to="/register" className="font-bold text-sensai-primary no-underline transition-opacity hover:opacity-80">Register now</Link>
         </p>
       </motion.div>
     </div>

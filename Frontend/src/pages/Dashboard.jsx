@@ -34,78 +34,77 @@ const Dashboard = () => {
   }, []);
 
   const stats = [
-    { label: 'Startup Score', value: reports[0]?.aiReport?.overallScore || '--', icon: <TrendingUp color="#8b5cf6" />, trend: '+5%' },
-    { label: 'AI Reports', value: reports.length, icon: <FileText color="#06b6d4" />, trend: 'New' },
-    { label: 'Mentor Sessions', value: '0', icon: <Users color="#10b981" />, trend: 'Upcoming' },
-    { label: 'Forum Posts', value: '0', icon: <MessageSquare color="#f59e0b" />, trend: 'Activity' },
+    { label: 'Startup Score', value: reports[0]?.aiReport?.overallScore || '--', icon: <TrendingUp className="text-sensai-primary" />, trend: '+5%' },
+    { label: 'AI Reports', value: reports.length, icon: <FileText className="text-sensai-secondary" />, trend: 'New' },
+    { label: 'Mentor Sessions', value: '0', icon: <Users className="text-emerald-400" />, trend: 'Upcoming' },
+    { label: 'Forum Posts', value: '0', icon: <MessageSquare className="text-amber-400" />, trend: 'Activity' },
   ];
 
   return (
-    <div className="container" style={{ padding: '2rem 0' }}>
-      <header style={{ marginBottom: '3rem' }}>
-        <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Welcome, {user?.name} 👋</h1>
-        <p style={{ color: 'var(--text-muted)' }}>Here's what's happening with your startup path today.</p>
+    <div className="container mx-auto px-6 py-12">
+      <header className="mb-12">
+        <h1 className="text-4xl font-bold text-white md:text-5xl">Welcome, {user?.name} 👋</h1>
+        <p className="mt-2 text-sensai-muted">Here's what's happening with your startup path today.</p>
       </header>
 
       {/* Stats Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
+      <div className="mb-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat, i) => (
           <motion.div 
             key={i}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="glass" 
-            style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
+            className="glass flex flex-col gap-4 p-6"
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div style={{ background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '12px' }}>{stat.icon}</div>
-              <span className="badge badge-success" style={{ fontSize: '0.7rem' }}>{stat.trend}</span>
+            <div className="flex items-start justify-between">
+              <div className="rounded-xl bg-white/5 p-2.5">{stat.icon}</div>
+              <span className="badge badge-success text-[0.65rem]">{stat.trend}</span>
             </div>
             <div>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>{stat.label}</p>
-              <h3 style={{ fontSize: '1.75rem' }}>{stat.value}</h3>
+              <p className="text-sm font-medium text-sensai-muted">{stat.label}</p>
+              <h3 className="text-3xl font-bold text-white">{stat.value}</h3>
             </div>
           </motion.div>
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Recent Reports */}
-        <section>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.5rem' }}>Recent AI Reports</h2>
-            <Link to="/feasibility" style={{ color: 'var(--accent-primary)', textDecoration: 'none', fontSize: '0.9rem', fontWeight: '600', display: 'flex', alignItems: 'center' }}>
+        <section className="lg:col-span-2">
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-white">Recent AI Reports</h2>
+            <Link to="/feasibility" className="flex items-center gap-1 text-sm font-semibold text-sensai-primary transition-colors hover:text-sensai-secondary">
               View All <ChevronRight size={16} />
             </Link>
           </div>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="flex flex-col gap-4">
             {loading ? (
-              <p>Loading reports...</p>
+              <p className="py-10 text-center text-sensai-muted">Loading reports...</p>
             ) : reports.length > 0 ? (
               reports.map((report) => (
-                <Link key={report._id} to={`/feasibility?id=${report._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <div className="glass glass-hover" style={{ padding: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                      <div style={{ background: 'rgba(139, 92, 246, 0.1)', padding: '10px', borderRadius: '10px' }}>
-                        <BarChart color="#8b5cf6" size={20} />
+                <Link key={report._id} to={`/feasibility?id=${report._id}`} className="no-underline">
+                  <div className="glass glass-hover flex items-center justify-between p-5">
+                    <div className="flex items-center gap-4">
+                      <div className="rounded-xl bg-sensai-primary/10 p-2.5">
+                        <BarChart className="text-sensai-primary" size={20} />
                       </div>
                       <div>
-                        <h4 style={{ fontSize: '1.1rem' }}>{report.startupName}</h4>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Generated on {new Date(report.createdAt).toLocaleDateString()}</p>
+                        <h4 className="text-lg font-bold text-white">{report.startupName}</h4>
+                        <p className="text-xs text-sensai-muted">Generated on {new Date(report.createdAt).toLocaleDateString()}</p>
                       </div>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--accent-primary)' }}>{report.aiReport?.overallScore}%</div>
-                      <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Confidence Score</p>
+                    <div className="text-right">
+                      <div className="text-xl font-bold text-sensai-primary">{report.aiReport?.overallScore}%</div>
+                      <p className="text-[0.65rem] font-bold uppercase tracking-widest text-sensai-muted">Viability</p>
                     </div>
                   </div>
                 </Link>
               ))
             ) : (
-              <div className="glass" style={{ padding: '3rem', textAlign: 'center', borderStyle: 'dashed' }}>
-                <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>You haven't generated any AI feasibility reports yet.</p>
+              <div className="glass flex flex-col items-center justify-center border-dashed p-12 text-center">
+                <p className="mb-6 text-sensai-muted">You haven't generated any AI feasibility reports yet.</p>
                 <Link to="/feasibility" className="btn-primary">
                   <Plus size={18} /> Generate Your First Report
                 </Link>
@@ -114,29 +113,33 @@ const Dashboard = () => {
           </div>
         </section>
 
-        {/* Quick Actions / Mentors */}
-        <section>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Upcoming Sessions</h2>
-          <div className="glass" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', color: 'var(--text-muted)' }}>
-                <Clock size={20} />
-                <span style={{ fontSize: '0.9rem' }}>No sessions scheduled</span>
-             </div>
-             <Link to="/mentorship" className="btn-primary" style={{ width: '100%', marginTop: '0.5rem' }}>
-                Find a Mentor
-             </Link>
-          </div>
+        {/* Quick Actions / Activity */}
+        <aside className="flex flex-col gap-8">
+          <section>
+            <h2 className="mb-6 text-2xl font-bold text-white">Sessions</h2>
+            <div className="glass flex flex-col gap-4 p-6">
+               <div className="flex items-center gap-3 text-sensai-muted">
+                  <Clock size={20} />
+                  <span className="text-sm font-medium">No sessions scheduled</span>
+               </div>
+               <Link to="/mentorship" className="btn-primary mt-2 w-full text-sm">
+                  Find a Mentor
+               </Link>
+            </div>
+          </section>
           
-          <div className="glass" style={{ marginTop: '2rem', padding: '1.5rem' }}>
-            <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>Community Activity</h3>
-            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
-              New discussion: "How to validate B2B SaaS ideas without a prototype?"
-            </p>
-            <Link to="/forum" style={{ display: 'block', marginTop: '1rem', fontSize: '0.85rem', color: 'var(--accent-secondary)', textDecoration: 'none', fontWeight: '600' }}>
-               Join Discussion
-            </Link>
-          </div>
-        </section>
+          <section>
+            <div className="glass p-6">
+              <h3 className="mb-4 text-lg font-bold text-white">Community</h3>
+              <p className="text-sm leading-relaxed text-sensai-muted">
+                New discussion: "How to validate B2B SaaS ideas without a prototype?"
+              </p>
+              <Link to="/forum" className="mt-4 block text-sm font-bold text-sensai-secondary no-underline transition-opacity hover:opacity-80">
+                 Join Discussion
+              </Link>
+            </div>
+          </section>
+        </aside>
       </div>
     </div>
   );

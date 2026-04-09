@@ -79,100 +79,77 @@ const Chat = () => {
     }
   };
 
-  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: '10rem' }}><Loader2 className="animate-spin" size={48} color="#8b5cf6" /></div>;
+  if (loading) return <div className="flex justify-center py-40"><Loader2 className="animate-spin text-sensai-primary" size={48} /></div>;
 
   return (
-    <div className="container" style={{ height: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem 0' }}>
+    <div className="container mx-auto flex h-[calc(100vh-140px)] flex-col gap-4 px-6 py-6 lg:h-[calc(100vh-120px)] lg:py-8">
       {/* Chat Header */}
-      <header className="glass" style={{ padding: '1rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button onClick={() => navigate('/dashboard')} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+      <header className="glass flex items-center justify-between px-6 py-4">
+        <div className="flex items-center gap-4">
+          <button onClick={() => navigate('/dashboard')} className="border-none bg-transparent text-sensai-muted transition-colors hover:text-white">
             <ChevronLeft size={24} />
           </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{ background: 'rgba(139, 92, 246, 0.1)', padding: '8px', borderRadius: '10px' }}>
-              <Bot color="#8b5cf6" size={24} />
+          <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-sensai-primary/10 p-2 text-sensai-primary">
+              <Bot size={24} />
             </div>
             <div>
-              <h3 style={{ fontSize: '1.1rem' }}>{session?.startupName || 'Sensai AI Advisor'}</h3>
-              <p style={{ fontSize: '0.75rem', color: 'var(--success)', fontWeight: '600' }}>ONLINE</p>
+              <h3 className="text-sm font-bold text-white md:text-base">{session?.startupName || 'Sensai Advisor'}</h3>
+              <p className="text-[0.65rem] font-bold tracking-widest text-emerald-400 uppercase">Sensai AI</p>
             </div>
           </div>
         </div>
-        <button onClick={generatePlan} className="glass" style={{ padding: '8px 16px', color: 'white', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', border: 'none' }}>
-           <FileBadge size={18} color="#06b6d4" /> Generate Plan
+        <button onClick={generatePlan} className="glass flex items-center gap-2 border-none px-4 py-2 text-xs font-bold text-white transition-opacity hover:opacity-80 md:text-sm">
+           <FileBadge size={18} className="text-sensai-secondary" /> 
+           <span className="hidden md:block">Generate Plan</span>
         </button>
       </header>
 
       {/* Messages Area */}
       <div 
         ref={scrollRef}
-        style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
-        className="glass"
+        className="glass flex flex-1 flex-col gap-8 overflow-y-auto p-6 md:p-8"
       >
         {messages.map((msg, i) => (
           <motion.div 
             key={i}
             initial={{ opacity: 0, x: msg.role === 'user' ? 20 : -20 }}
             animate={{ opacity: 1, x: 0 }}
-            style={{ 
-              maxWidth: '80%', 
-              alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-              display: 'flex',
-              flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
-              gap: '1rem'
-            }}
+            className={`flex max-w-[85%] gap-4 md:max-w-[75%] ${msg.role === 'user' ? 'flex-row-reverse self-end' : 'flex-row self-start'}`}
           >
-            <div style={{ 
-              width: '40px', 
-              height: '40px', 
-              borderRadius: '12px', 
-              background: msg.role === 'user' ? 'rgba(6, 182, 212, 0.1)' : 'rgba(139, 92, 246, 0.1)', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              flexShrink: 0
-            }}>
-              {msg.role === 'user' ? <UserIcon size={20} color="#06b6d4" /> : <Bot size={20} color="#8b5cf6" />}
+            <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl 
+              ${msg.role === 'user' ? 'bg-sensai-secondary/10 text-sensai-secondary' : 'bg-sensai-primary/10 text-sensai-primary'}`}>
+              {msg.role === 'user' ? <UserIcon size={22} /> : <Bot size={22} />}
             </div>
-            <div style={{ 
-              padding: '1.25rem', 
-              borderRadius: '20px', 
-              background: msg.role === 'user' ? 'var(--accent-secondary)' : 'rgba(255,255,255,0.05)',
-              color: 'white',
-              fontSize: '0.95rem',
-              lineHeight: '1.6',
-              whiteSpace: 'pre-wrap',
-              boxShadow: msg.role === 'user' ? '0 4px 15px rgba(6, 182, 212, 0.2)' : 'none'
-            }}>
+            <div className={`rounded-3xl p-5 text-sm leading-relaxed md:text-base 
+              ${msg.role === 'user' ? 'bg-sensai-secondary shadow-[0_4px_15px_rgba(6,182,212,0.2)] text-white' : 'bg-white/5 text-slate-100'}`}>
               {msg.content}
             </div>
           </motion.div>
         ))}
         {sending && (
-          <div style={{ alignSelf: 'flex-start', display: 'flex', gap: '1rem' }}>
-             <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(139, 92, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-               <Bot size={20} color="#8b5cf6" />
+          <div className="flex gap-4 self-start">
+             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sensai-primary/10 text-sensai-primary">
+               <Bot size={22} />
              </div>
-             <div className="glass" style={{ padding: '1rem', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Loader2 className="animate-spin" size={16} />
-                <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Sensai is typing...</span>
+             <div className="glass flex items-center gap-3 rounded-3xl p-4 px-6">
+                <Loader2 className="animate-spin text-sensai-primary" size={16} />
+                <span className="text-sm font-medium text-sensai-muted">Sensai is thinking...</span>
              </div>
           </div>
         )}
       </div>
 
       {/* Input Area */}
-      <form onSubmit={handleSendMessage} style={{ display: 'flex', gap: '1rem' }}>
+      <form onSubmit={handleSendMessage} className="flex gap-4 mt-2">
         <input 
-          className="glass" 
-          style={{ flex: 1, padding: '1rem 1.5rem', border: '1px solid var(--border-glass)', borderRadius: '15px', color: 'white', outline: 'none' }}
+          className="glass flex-1 border border-glass bg-transparent px-6 py-4 text-sm text-white outline-none focus:border-sensai-primary md:text-base"
           placeholder="Type your message to Sensai..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
         />
-        <button type="submit" className="btn-primary" style={{ padding: '0 2rem' }} disabled={sending}>
-          <Send size={20} />
+        <button type="submit" className="btn-primary w-20 md:w-28" disabled={sending}>
+          <Send size={22} />
         </button>
       </form>
     </div>

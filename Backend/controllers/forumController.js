@@ -1,4 +1,4 @@
-import ForumPost from "../models/ForumPost.js";
+import ForumPost from "../model/ForumPost.js";
 
 // @route POST /api/forum
 export const createPost = async (req, res, next) => {

@@ -1,5 +1,5 @@
-import Mentor from "../models/Mentor.js";
-import User from "../models/User.js";
+import Mentor from "../model/Mentor.js";
+import User from "../model/User.js";
 
 // @route POST /api/mentors/apply
 // Apply to become a mentor (founder applies)

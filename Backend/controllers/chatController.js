@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import ChatSession from "../models/ChatSession.js";
+import ChatSession from "../model/ChatSession.js";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 

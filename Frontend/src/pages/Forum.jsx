@@ -7,7 +7,7 @@ import {
   ThumbsUp, 
   Plus, 
   Search, 
-  User, 
+  User as UserIcon, 
   Clock,
   MoreVertical,
   Send,
@@ -60,11 +60,11 @@ const Forum = () => {
   };
 
   return (
-    <div className="container" style={{ padding: '2rem 0' }}>
-      <header style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <div className="container mx-auto px-6 py-12">
+      <header className="mb-12 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
         <div>
-          <h1 style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>Community Forum</h1>
-          <p style={{ color: 'var(--text-muted)' }}>Discuss ideas, share insights, and grow with fellow founders.</p>
+          <h1 className="mb-2 text-5xl font-bold text-white md:text-6xl">Community Forum</h1>
+          <p className="text-lg text-sensai-muted">Discuss ideas, share insights, and grow with fellow founders.</p>
         </div>
         <button className="btn-primary" onClick={() => setShowCreate(true)}>
           <Plus size={20} /> Create Post
@@ -72,64 +72,61 @@ const Forum = () => {
       </header>
 
       {/* Search Bar */}
-      <div className="glass" style={{ padding: '1rem', marginBottom: '2.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <Search size={20} color="var(--text-muted)" />
+      <div className="glass mb-10 flex items-center gap-4 p-4">
+        <Search size={22} className="text-sensai-muted" />
         <input 
-          className="input-field" 
+          className="w-full border-none bg-transparent text-lg text-white outline-none placeholder:text-sensai-muted" 
           placeholder="Search discussions..." 
-          style={{ border: 'none', background: 'transparent', padding: '0' }}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '3rem' }}>
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
         {/* Posts List */}
-        <section>
+        <section className="lg:col-span-2">
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '5rem' }}><Loader2 className="animate-spin" size={32} /></div>
+            <div className="flex justify-center py-20"><Loader2 className="animate-spin text-sensai-primary" size={32} /></div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div className="flex flex-col gap-6">
               {posts.filter(p => p.title.toLowerCase().includes(searchTerm.toLowerCase())).map((post, i) => (
                 <motion.div 
                   key={post._id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="glass" 
-                  style={{ padding: '2rem' }}
+                  className="glass p-8"
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                    <span className="badge" style={{ background: 'rgba(6, 182, 212, 0.1)', color: '#06b6d4' }}>{post.category}</span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                  <div className="mb-4 flex items-center justify-between">
+                    <span className="badge bg-sensai-secondary/10 text-sensai-secondary border border-sensai-secondary/20">{post.category}</span>
+                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-sensai-muted">
                       <Clock size={14} />
                       {new Date(post.createdAt).toLocaleDateString()}
                     </div>
                   </div>
-                  <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{post.title}</h3>
-                  <p style={{ color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '1.5rem' }}>{post.content}</p>
+                  <h3 className="mb-4 text-2xl font-bold text-white">{post.title}</h3>
+                  <p className="mb-6 leading-relaxed text-sensai-muted">{post.content}</p>
                   
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1.5rem', borderTop: '1px solid var(--border-glass)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <User size={16} />
-                        </div>
-                        <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>{post.user?.name || 'User'}</span>
+                  <div className="flex items-center justify-between border-t border-glass pt-6">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-sensai-muted">
+                        <UserIcon size={18} />
                       </div>
+                      <span className="text-sm font-bold text-white">{post.user?.name || 'Founder'}</span>
                     </div>
                     
-                    <div style={{ display: 'flex', gap: '1.5rem' }}>
+                    <div className="flex gap-6">
                       <button 
                         onClick={() => toggleLike(post._id)}
-                        style={{ background: 'none', border: 'none', color: post.likes?.includes(user?._id) ? 'var(--accent-primary)' : 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                        className={`flex items-center gap-2 bg-none border-none cursor-pointer transition-colors
+                          ${post.likes?.includes(user?._id) ? 'text-sensai-primary' : 'text-sensai-muted hover:text-white'}`}
                       >
-                        <ThumbsUp size={18} fill={post.likes?.includes(user?._id) ? 'var(--accent-primary)' : 'none'} />
-                        <span>{post.likes?.length || 0}</span>
+                        <ThumbsUp size={18} className={post.likes?.includes(user?._id) ? 'fill-sensai-primary' : ''} />
+                        <span className="text-sm font-bold">{post.likes?.length || 0}</span>
                       </button>
-                      <button style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <button className="flex items-center gap-2 bg-none border-none cursor-pointer text-sensai-muted transition-colors hover:text-white">
                         <MessageSquare size={18} />
-                        <span>{post.comments?.length || 0}</span>
+                        <span className="text-sm font-bold">{post.comments?.length || 0}</span>
                       </button>
                     </div>
                   </div>
@@ -140,19 +137,19 @@ const Forum = () => {
         </section>
 
         {/* Sidebar */}
-        <aside>
-          <div className="glass" style={{ padding: '2rem', position: 'sticky', top: '7rem' }}>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '1.5rem' }}>Trending Topics</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <aside className="hidden lg:block">
+          <div className="glass sticky top-40 p-8">
+            <h3 className="mb-6 text-xl font-bold text-white uppercase tracking-widest">Trending Topics</h3>
+            <div className="flex flex-col gap-4">
               {['#Bootstrapping', '#OpenAI', '#MarketValidation', '#Funding2024', '#SaaSMetrics'].map(tag => (
-                <a key={tag} href="#" style={{ textDecoration: 'none', color: 'var(--accent-secondary)', fontSize: '0.95rem' }}>{tag}</a>
+                <a key={tag} href="#" className="text-[0.95rem] font-medium text-sensai-secondary no-underline transition-opacity hover:opacity-80">{tag}</a>
               ))}
             </div>
             
-            <div style={{ marginTop: '3rem', padding: '1.5rem', background: 'rgba(139, 92, 246, 0.1)', borderRadius: '12px' }}>
-              <h4 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: '#a78bfa' }}>Weekly Challenge</h4>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
-                "Post your 30-second elevator pitch and get feedback from 3 mentors."
+            <div className="mt-10 rounded-2xl bg-sensai-primary/10 p-6 border border-sensai-primary/20">
+              <h4 className="mb-2 text-sm font-bold uppercase tracking-[0.2em] text-sensai-primary">Sensai Challenge</h4>
+              <p className="text-sm leading-relaxed text-sensai-muted">
+                "Post your 30-second elevator pitch and get feedback from 3 verified mentors this week."
               </p>
             </div>
           </div>
@@ -166,23 +163,22 @@ const Forum = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}
+            className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/80 p-6 backdrop-blur-sm"
           >
             <motion.div 
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
-              className="glass" 
-              style={{ width: '100%', maxWidth: '600px', padding: '3rem', position: 'relative' }}
+              className="glass relative w-full max-w-[600px] p-8 md:p-12"
             >
-              <button onClick={() => setShowCreate(false)} style={{ position: 'absolute', right: '2rem', top: '2rem', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+              <button onClick={() => setShowCreate(false)} className="absolute right-6 top-6 border-none bg-transparent text-sensai-muted transition-colors hover:text-white">
                 <X size={24} />
               </button>
               
-              <h2 style={{ fontSize: '2rem', marginBottom: '2rem' }}>Create Discussion</h2>
+              <h2 className="mb-8 text-3xl font-bold text-white">Create Discussion</h2>
               
-              <form onSubmit={handleCreatePost} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Title</label>
+              <form onSubmit={handleCreatePost} className="flex flex-col gap-6">
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-bold uppercase tracking-widest text-sensai-muted">Topic Title</label>
                   <input 
                     className="input-field" 
                     placeholder="What's on your mind?" 
@@ -192,13 +188,12 @@ const Forum = () => {
                   />
                 </div>
                 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Category</label>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-bold uppercase tracking-widest text-sensai-muted">Category</label>
                   <select 
-                    className="input-field"
+                    className="input-field cursor-pointer pr-10"
                     value={newPost.category}
                     onChange={(e) => setNewPost({...newPost, category: e.target.value})}
-                    style={{ appearance: 'none' }}
                   >
                     <option>General</option>
                     <option>Idea Validation</option>
@@ -208,20 +203,19 @@ const Forum = () => {
                   </select>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Content</label>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-bold uppercase tracking-widest text-sensai-muted">Content</label>
                   <textarea 
-                    className="input-field" 
-                    placeholder="Share your thoughts..." 
-                    style={{ minHeight: '150px' }}
+                    className="input-field min-h-[150px] resize-none" 
+                    placeholder="Share your thoughts with the community..." 
                     value={newPost.content}
                     onChange={(e) => setNewPost({...newPost, content: e.target.value})}
                     required
                   />
                 </div>
 
-                <button type="submit" className="btn-primary" style={{ marginTop: '1rem' }}>
-                  Post Discussion <Send size={18} />
+                <button type="submit" className="btn-primary mt-4">
+                  Post Discussion <Send size={18} className="ml-2" />
                 </button>
               </form>
             </motion.div>

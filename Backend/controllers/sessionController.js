@@ -1,5 +1,5 @@
-import Session from "../models/Session.js";
-import Mentor from "../models/Mentor.js";
+import Session from "../model/Session.js";
+import Mentor from "../model/Mentor.js";
 
 // @route POST /api/sessions/book
 export const bookSession = async (req, res, next) => {

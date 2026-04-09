@@ -59,10 +59,10 @@ const AIAdvisory = () => {
     }
   };
 
-  if (fetching) return <div style={{ display: 'flex', justifyContent: 'center', padding: '10rem' }}><Loader2 className="animate-spin" size={48} color="#8b5cf6" /></div>;
+  if (fetching) return <div className="flex justify-center py-40"><Loader2 className="animate-spin text-sensai-primary" size={48} /></div>;
 
   return (
-    <div className="container" style={{ padding: '2rem 0' }}>
+    <div className="container mx-auto px-6 py-12">
       <AnimatePresence mode="wait">
         {!report ? (
           <motion.div 
@@ -70,18 +70,17 @@ const AIAdvisory = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.05 }}
-            className="glass" 
-            style={{ padding: '3rem', maxWidth: '800px', margin: '0 auto' }}
+            className="glass mx-auto max-w-[800px] p-8 md:p-12"
           >
-            <header style={{ marginBottom: '2.5rem', textAlign: 'center' }}>
-              <Sparkles color="#8b5cf6" size={40} style={{ marginBottom: '1rem' }} />
-              <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>AI Feasibility Advisory</h1>
-              <p style={{ color: 'var(--text-muted)' }}>Get a deep-dive analysis of your startup idea powered by GPT-4.</p>
+            <header className="mb-10 text-center">
+              <Sparkles className="mx-auto mb-4 text-sensai-primary" size={40} />
+              <h1 className="mb-2 text-4xl font-bold text-white md:text-5xl">AI Feasibility Advisory</h1>
+              <p className="text-sensai-muted">Get a deep-dive analysis of your startup idea powered by GPT-4.</p>
             </header>
 
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <label style={{ fontWeight: '600', fontSize: '1rem' }}>Startup / Project Name</label>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+              <div className="flex flex-col gap-2">
+                <label className="text-lg font-semibold text-white">Startup / Project Name</label>
                 <input 
                   className="input-field" 
                   placeholder="e.g. EcoSphere, FinFlow" 
@@ -91,20 +90,19 @@ const AIAdvisory = () => {
                 />
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <label style={{ fontWeight: '600', fontSize: '1rem' }}>Idea Description</label>
+              <div className="flex flex-col gap-2">
+                <label className="text-lg font-semibold text-white">Idea Description</label>
                 <textarea 
-                  className="input-field" 
+                  className="input-field min-h-[150px] resize-none" 
                   placeholder="Explain your concept, core value proposition, and how it works..." 
-                  style={{ minHeight: '150px', resize: 'vertical' }}
                   value={formData.ideaDescription}
                   onChange={(e) => setFormData({...formData, ideaDescription: e.target.value})}
                   required 
                 />
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <label style={{ fontWeight: '600', fontSize: '1rem' }}>Target Market</label>
+              <div className="flex flex-col gap-2">
+                <label className="text-lg font-semibold text-white">Target Market</label>
                 <input 
                   className="input-field" 
                   placeholder="e.g. Small business owners in Southeast Asia, Tech-savvy Gen Z" 
@@ -116,11 +114,10 @@ const AIAdvisory = () => {
 
               <button 
                 type="submit" 
-                className="btn-primary" 
-                style={{ padding: '16px', fontSize: '1.1rem' }}
+                className="btn-primary py-4 text-xl"
                 disabled={loading}
               >
-                {loading ? <><Loader2 className="animate-spin" size={20} /> Analyzing Concept...</> : <><Send size={20} /> Generate Feasibility Report</>}
+                {loading ? <><Loader2 className="mr-2 animate-spin" size={20} /> Analyzing...</> : <><Send className="mr-2" size={20} /> Generate Report</>}
               </button>
             </form>
           </motion.div>
@@ -131,46 +128,46 @@ const AIAdvisory = () => {
             animate={{ opacity: 1, x: 0 }}
             className="page-transition"
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-              <button onClick={() => setReport(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div className="mb-8 flex items-center justify-between">
+              <button onClick={() => setReport(null)} className="flex items-center gap-2 border-none bg-transparent text-sensai-muted transition-colors hover:text-white">
                 <ChevronLeft size={20} /> Back to Generator
               </button>
-              <button className="glass" style={{ padding: '8px 16px', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <button className="glass flex items-center gap-2 border-none p-2 px-4 font-semibold text-white transition-opacity hover:opacity-80">
                  <Download size={18} /> Export PDF
               </button>
             </div>
 
-            <header className="glass" style={{ padding: '3rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <h1 style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>{report.startupName}</h1>
-                <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Analysis generated on {new Date(report.createdAt).toLocaleDateString()}</p>
+            <header className="glass mb-8 flex flex-col items-center justify-between gap-6 p-8 md:flex-row md:p-12">
+              <div className="text-center md:text-left">
+                <h1 className="mb-2 text-4xl font-bold text-white md:text-6xl">{report.startupName}</h1>
+                <p className="text-lg text-sensai-muted">Analysis generated on {new Date(report.createdAt).toLocaleDateString()}</p>
               </div>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '4rem', fontWeight: '800', background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              <div className="text-center">
+                <div className="bg-gradient-to-br from-sensai-primary to-sensai-secondary bg-clip-text text-7xl font-extrabold text-transparent md:text-8xl">
                   {report.aiReport?.overallScore}
                 </div>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', letterSpacing: '0.1em', fontWeight: '700' }}>OVERALL VIABILITY</p>
+                <p className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-sensai-muted">Viability Score</p>
               </div>
             </header>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <AnalysisSection 
-                icon={<Target color="#8b5cf6" size={24} />}
+                icon={<Target className="text-sensai-primary" size={24} />}
                 title="Market Analysis"
                 content={report.aiReport?.marketAnalysis}
               />
               <AnalysisSection 
-                icon={<PieChart color="#06b6d4" size={24} />}
+                icon={<PieChart className="text-sensai-secondary" size={24} />}
                 title="Competitor Overview"
                 content={report.aiReport?.competitorOverview}
               />
               <AnalysisSection 
-                icon={<TrendingUp color="#10b981" size={24} />}
+                icon={<TrendingUp className="text-emerald-400" size={24} />}
                 title="Revenue Projection"
                 content={report.aiReport?.revenueProjection}
               />
               <AnalysisSection 
-                icon={<ShieldAlert color="#ef4444" size={24} />}
+                icon={<ShieldAlert className="text-red-400" size={24} />}
                 title="Risk Assessment"
                 content={report.aiReport?.riskAssessment}
               />
@@ -183,12 +180,12 @@ const AIAdvisory = () => {
 };
 
 const AnalysisSection = ({ icon, title, content }) => (
-  <div className="glass" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-      <div style={{ background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '10px' }}>{icon}</div>
-      <h3 style={{ fontSize: '1.25rem' }}>{title}</h3>
+  <div className="glass flex flex-col gap-4 p-8">
+    <div className="flex items-center gap-3">
+      <div className="rounded-xl bg-white/5 p-2.5">{icon}</div>
+      <h3 className="text-xl font-bold text-white">{title}</h3>
     </div>
-    <div style={{ color: 'var(--text-muted)', lineHeight: '1.7', whiteSpace: 'pre-wrap' }}>
+    <div className="whitespace-pre-wrap leading-relaxed text-sensai-muted">
       {content}
     </div>
   </div>

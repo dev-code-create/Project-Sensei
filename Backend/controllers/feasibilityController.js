@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import FeasibilityReport from "../models/FeasibilityReport.js";
+import FeasibilityReport from "../model/FeasibilityReport.js";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 

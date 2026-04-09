@@ -9,7 +9,8 @@ import {
   MessageCircle, 
   Award,
   Filter,
-  CheckCircle2
+  CheckCircle2,
+  Loader2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -41,42 +42,33 @@ const Mentorship = () => {
   );
 
   return (
-    <div className="container" style={{ padding: '2rem 0' }}>
-      <header style={{ marginBottom: '3rem', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>Expert Mentorship</h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', maxWidth: '700px', margin: '0 auto' }}>
+    <div className="container mx-auto px-6 py-12">
+      <header className="mb-12 text-center">
+        <h1 className="mb-4 text-5xl font-bold text-white md:text-6xl">Expert Mentorship</h1>
+        <p className="mx-auto max-w-2xl text-lg text-sensai-muted md:text-xl">
           Connect with verified industry leaders for personalized guidance to scale your startup.
         </p>
       </header>
 
       {/* Search and Filter */}
-      <div className="glass" style={{ padding: '1.5rem', marginBottom: '3rem', display: 'flex', flexWrap: 'wrap', gap: '1.5rem', alignItems: 'center' }}>
-        <div style={{ flex: 1, minWidth: '300px', position: 'relative' }}>
-          <Search size={20} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+      <div className="glass mb-12 flex flex-wrap items-center gap-6 p-6">
+        <div className="relative flex-1 min-w-[300px]">
+          <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-sensai-muted" />
           <input 
-            className="input-field" 
-            style={{ paddingLeft: '48px' }}
+            className="input-field pl-12" 
             placeholder="Search mentors by name, expertise, or bio..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div className="flex flex-wrap gap-3">
           {categories.map(cat => (
             <button 
               key={cat} 
               onClick={() => setFilter(cat)}
-              style={{ 
-                padding: '8px 16px', 
-                borderRadius: '10px', 
-                border: '1px solid var(--border-glass)', 
-                background: filter === cat ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)',
-                color: 'white',
-                cursor: 'pointer',
-                fontSize: '0.9rem',
-                transition: 'all 0.2s'
-              }}
+              className={`rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 border border-glass
+                ${filter === cat ? 'bg-sensai-primary text-white shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'bg-white/5 text-sensai-muted hover:text-white'}`}
             >
               {cat}
             </button>
@@ -85,54 +77,53 @@ const Mentorship = () => {
       </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '5rem' }}>Loading mentors...</div>
+        <div className="flex justify-center py-20"><Loader2 className="animate-spin text-sensai-primary" size={40} /></div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '2rem' }}>
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
           {filteredMentors.length > 0 ? filteredMentors.map((mentor, i) => (
             <motion.div 
               key={mentor._id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="glass glass-hover" 
-              style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
+              className="glass glass-hover flex flex-col gap-6 p-8"
             >
-              <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
-                <div style={{ position: 'relative' }}>
-                  <div style={{ width: '80px', height: '80px', borderRadius: '20px', background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: '700' }}>
+              <div className="flex items-center gap-5">
+                <div className="relative">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-sensai-primary to-sensai-secondary text-2xl font-bold text-white">
                     {mentor.name.charAt(0)}
                   </div>
-                  <div style={{ position: 'absolute', bottom: '-5px', right: '-5px', background: '#10b981', borderRadius: '50%', padding: '4px', border: '3px solid var(--bg-dark)' }}>
-                    <CheckCircle2 size={12} color="white" />
+                  <div className="absolute -bottom-1.5 -right-1.5 rounded-full border-4 border-slate-900 bg-emerald-500 p-1">
+                    <CheckCircle2 size={12} className="text-white" />
                   </div>
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '1.4rem' }}>{mentor.name}</h3>
-                  <p style={{ color: 'var(--accent-secondary)', fontSize: '0.9rem', fontWeight: '600' }}>{mentor.title}</p>
+                  <h3 className="text-2xl font-bold text-white leading-tight">{mentor.name}</h3>
+                  <p className="mt-1 text-sm font-bold text-sensai-secondary uppercase tracking-widest">{mentor.title || 'Expert Advisor'}</p>
                 </div>
               </div>
 
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.6', flex: 1 }}>{mentor.bio}</p>
+              <p className="flex-1 text-sm leading-relaxed text-sensai-muted">{mentor.bio}</p>
 
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div className="flex flex-wrap gap-2">
                 {mentor.expertise.map((exp, i) => (
-                  <span key={i} className="badge" style={{ background: 'rgba(139, 92, 246, 0.1)', color: '#a78bfa', fontSize: '0.7rem' }}>{exp}</span>
+                  <span key={i} className="rounded-lg bg-sensai-primary/10 px-3 py-1 text-[0.65rem] font-bold text-sensai-primary uppercase tracking-widest border border-sensai-primary/20">{exp}</span>
                 ))}
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1.5rem', borderTop: '1px solid var(--border-glass)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fbbf24' }}>
-                  <Star size={16} fill="#fbbf24" />
-                  <span style={{ fontWeight: '700', fontSize: '1rem' }}>4.9</span>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>(120 reviews)</span>
+              <div className="flex items-center justify-between border-t border-glass pt-6">
+                <div className="flex items-center gap-1.5">
+                  <Star size={16} className="fill-amber-400 text-amber-400" />
+                  <span className="text-lg font-bold text-white">4.9</span>
+                  <span className="text-xs text-sensai-muted ml-1">(120 reviews)</span>
                 </div>
-                <Link to={`/chat/new?mentor=${mentor.user}`} className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
-                  <MessageCircle size={16} /> Book Session
+                <Link to={`/chat/new?mentor=${mentor.user}`} className="btn-primary py-2 px-5 text-xs">
+                  <MessageCircle size={16} className="mr-2" /> Book Session
                 </Link>
               </div>
             </motion.div>
           )) : (
-            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '5rem', color: 'var(--text-muted)' }}>
+            <div className="col-span-full py-20 text-center text-sensai-muted">
               No mentors found matching your criteria.
             </div>
           )}

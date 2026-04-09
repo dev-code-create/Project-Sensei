@@ -7,12 +7,12 @@ const Landing = () => {
   return (
     <div className="page-transition">
       {/* Hero Section */}
-      <section style={{ padding: '8rem 2rem 4rem', textAlign: 'center', minHeight: '80vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <section className="flex min-h-[80vh] flex-col justify-center px-6 py-24 text-center">
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          style={{ fontSize: '4.5rem', marginBottom: '1.5rem', background: 'linear-gradient(to right, #fff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+          className="bg-gradient-to-r from-white to-slate-400 bg-clip-text font-heading text-5xl font-bold tracking-tight text-transparent md:text-7xl lg:text-8xl"
         >
           Scale Your Startup <br /> with AI-Powered Precision
         </motion.h1>
@@ -20,7 +20,7 @@ const Landing = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          style={{ fontSize: '1.25rem', color: 'var(--text-muted)', maxWidth: '800px', margin: '0 auto 2.5rem', lineHeight: '1.6' }}
+          className="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-sensai-muted md:text-xl lg:text-2xl"
         >
           Bridge the gap between vision and market entry. Startup Sensai combines AI insights with expert mentorship to turn your concept into a scalable venture.
         </motion.p>
@@ -28,37 +28,37 @@ const Landing = () => {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center' }}
+          className="mt-10 flex flex-wrap justify-center gap-4"
         >
-          <Link to="/register" className="btn-primary" style={{ padding: '14px 32px', fontSize: '1.1rem' }}>
+          <Link to="/register" className="btn-primary px-8 py-4 text-lg">
             Get Started Free <ChevronRight size={20} />
           </Link>
-          <Link to="/feasibility" className="glass" style={{ padding: '14px 32px', fontSize: '1.1rem', textDecoration: 'none', color: 'white', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Link to="/feasibility" className="glass flex items-center gap-2 px-8 py-4 text-lg text-white no-underline transition-opacity hover:opacity-90">
             Try AI Advisory
           </Link>
         </motion.div>
       </section>
 
       {/* Features Grid */}
-      <section className="container" style={{ padding: '4rem 0' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+      <section className="container mx-auto px-6 py-20">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <FeatureCard 
-            icon={<BarChart3 color="#8b5cf6" size={32} />}
+            icon={<BarChart3 className="text-sensai-primary" size={32} />}
             title="Instant Feasibility"
             description="Our GPT-4 model analyzes your startup idea against market trends and competition in seconds."
           />
           <FeatureCard 
-            icon={<Users color="#06b6d4" size={32} />}
+            icon={<Users className="text-sensai-secondary" size={32} />}
             title="Verified Mentors"
             description="Connect with industry experts for 1:1 sessions to navigate scaling challenges."
           />
           <FeatureCard 
-            icon={<Rocket color="#10b981" size={32} />}
+            icon={<Rocket className="text-emerald-400" size={32} />}
             title="Growth Roadmap"
             description="Get personalized action plans for funding, marketing, and product development."
           />
           <FeatureCard 
-            icon={<ShieldCheck color="#f59e0b" size={32} />}
+            icon={<ShieldCheck className="text-amber-400" size={32} />}
             title="Investor Ready"
             description="Optimize your pitch decks and financial projections with AI-curated insights."
           />
@@ -71,12 +71,11 @@ const Landing = () => {
 const FeatureCard = ({ icon, title, description }) => (
   <motion.div 
     whileHover={{ y: -5 }}
-    className="glass glass-hover" 
-    style={{ padding: '2.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
+    className="glass glass-hover flex flex-col gap-4 p-8"
   >
-    <div style={{ background: 'rgba(255,255,255,0.05)', width: 'fit-content', padding: '12px', borderRadius: '12px' }}>{icon}</div>
-    <h3 style={{ fontSize: '1.5rem' }}>{title}</h3>
-    <p style={{ color: 'var(--text-muted)', lineHeight: '1.6' }}>{description}</p>
+    <div className="w-fit rounded-xl bg-white/5 p-3">{icon}</div>
+    <h3 className="text-2xl font-bold text-white">{title}</h3>
+    <p className="leading-relaxed text-sensai-muted">{description}</p>
   </motion.div>
 );
 

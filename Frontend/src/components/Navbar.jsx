@@ -13,31 +13,36 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="glass" style={{ margin: '1rem', padding: '0.75rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: '1rem', zIndex: 100 }}>
-      <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: 'inherit' }}>
-        <Zap size={24} color="#8b5cf6" fill="#8b5cf6" />
-        <span style={{ fontSize: '1.25rem', fontWeight: '700', fontFamily: 'var(--font-heading)' }}>Startup Sensai</span>
+    <nav className="glass sticky top-4 z-[100] m-4 flex items-center justify-between px-6 py-3">
+      <Link to="/" className="flex items-center gap-2 no-underline transition-opacity hover:opacity-80">
+        <Zap size={24} className="fill-sensai-primary text-sensai-primary" />
+        <span className="font-heading text-xl font-bold tracking-tight text-white">Startup Sensai</span>
       </Link>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+      <div className="flex items-center gap-8">
         {user ? (
           <>
-            <Link to="/dashboard" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: '500' }}>Dashboard</Link>
-            <Link to="/feasibility" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: '500' }}>AI Advisory</Link>
-            <Link to="/mentorship" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: '500' }}>Mentors</Link>
-            <Link to="/forum" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: '500' }}>Forum</Link>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginLeft: '1rem', borderLeft: '1px solid var(--border-glass)', paddingLeft: '1.5rem' }}>
-               <span style={{ fontSize: '0.9rem', color: 'var(--text-main)' }}>{user.name}</span>
-               <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: 'var(--error)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+            <div className="hidden items-center gap-6 md:flex">
+              <Link to="/dashboard" className="text-sm font-medium text-sensai-muted no-underline transition-colors hover:text-white">Dashboard</Link>
+              <Link to="/feasibility" className="text-sm font-medium text-sensai-muted no-underline transition-colors hover:text-white">AI Advisory</Link>
+              <Link to="/mentorship" className="text-sm font-medium text-sensai-muted no-underline transition-colors hover:text-white">Mentors</Link>
+              <Link to="/forum" className="text-sm font-medium text-sensai-muted no-underline transition-colors hover:text-white">Forum</Link>
+            </div>
+            <div className="flex items-center gap-4 border-l border-glass pl-6 ml-2">
+               <span className="hidden text-sm font-medium text-white lg:block">{user.name}</span>
+               <button 
+                 onClick={handleLogout} 
+                 className="flex items-center text-red-400 transition-colors hover:text-red-300"
+               >
                  <LogOut size={18} />
                </button>
             </div>
           </>
         ) : (
-          <>
-            <Link to="/login" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: '500' }}>Login</Link>
-            <Link to="/register" className="btn-primary" style={{ padding: '8px 20px', fontSize: '0.9rem' }}>Join Now</Link>
-          </>
+          <div className="flex items-center gap-6">
+            <Link to="/login" className="text-sm font-medium text-sensai-muted no-underline transition-colors hover:text-white">Login</Link>
+            <Link to="/register" className="btn-primary py-2 text-sm">Join Now</Link>
+          </div>
         )}
       </div>
     </nav>
