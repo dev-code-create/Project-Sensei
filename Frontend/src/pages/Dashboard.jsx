@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { 
@@ -10,7 +10,11 @@ import {
   TrendingUp, 
   Clock,
   ChevronRight,
-  Plus
+  Plus,
+  Trash2,
+  AlertTriangle,
+  X,
+  Loader2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -18,6 +22,9 @@ const Dashboard = () => {
   const { user } = useAuth();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, reportId: null, reportName: '' });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,6 +39,26 @@ const Dashboard = () => {
     };
     fetchData();
   }, []);
+
+  const handleDeleteReport = (e, id, name) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDeleteModal({ isOpen: true, reportId: id, reportName: name });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteModal.reportId) return;
+    setIsDeleting(true);
+    try {
+      await api.delete(`/feasibility/${deleteModal.reportId}`);
+      setReports(reports.filter(report => report._id !== deleteModal.reportId));
+      setDeleteModal({ isOpen: false, reportId: null, reportName: '' });
+    } catch (error) {
+      console.error('Error deleting report', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const stats = [
     { label: 'Startup Score', value: reports[0]?.aiReport?.overallScore || '--', icon: <TrendingUp className="text-sensai-primary" />, trend: '+5%' },
@@ -87,6 +114,13 @@ const Dashboard = () => {
                 <Link key={report._id} to={`/feasibility?id=${report._id}`} className="no-underline">
                   <div className="glass glass-hover flex items-center justify-between p-5">
                     <div className="flex items-center gap-4">
+                      <button 
+                        onClick={(e) => handleDeleteReport(e, report._id, report.startupName)}
+                        className="rounded-lg p-1.5 text-sensai-muted transition-colors hover:bg-red-500/10 hover:text-red-500"
+                        title="Delete Report"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                       <div className="rounded-xl bg-sensai-primary/10 p-2.5">
                         <BarChart className="text-sensai-primary" size={20} />
                       </div>
@@ -141,6 +175,62 @@ const Dashboard = () => {
           </section>
         </aside>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {deleteModal.isOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => !isDeleting && setDeleteModal({ ...deleteModal, isOpen: false })}
+              className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="glass relative w-full max-w-md overflow-hidden p-8"
+            >
+              <button 
+                onClick={() => !isDeleting && setDeleteModal({ ...deleteModal, isOpen: false })}
+                className="absolute top-4 right-4 text-sensai-muted hover:text-white transition-colors"
+              >
+                <X size={20} />
+              </button>
+
+              <div className="mb-6 flex flex-col items-center text-center">
+                <div className="mb-4 rounded-full bg-red-500/10 p-4 text-red-500">
+                  <AlertTriangle size={32} />
+                </div>
+                <h3 className="mb-2 text-2xl font-bold text-white">Delete Report?</h3>
+                <p className="text-sensai-muted">
+                  Are you sure you want to delete <span className="font-semibold text-white">"{deleteModal.reportName}"</span>? This action cannot be undone.
+                </p>
+              </div>
+
+              <div className="flex gap-4 mt-8">
+                <button 
+                  onClick={() => !isDeleting && setDeleteModal({ ...deleteModal, isOpen: false })}
+                  className="flex-1 px-6 py-3 rounded-xl border border-glass text-white font-semibold transition-all hover:bg-white/5"
+                  disabled={isDeleting}
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={confirmDelete}
+                  className="flex-1 bg-linear-to-r from-red-600 to-red-500 text-white px-6 py-3 rounded-xl font-semibold 
+                             flex items-center justify-center gap-2 transition-all hover:brightness-110 active:scale-95"
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? <Loader2 className="animate-spin" size={20} /> : "Delete"}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

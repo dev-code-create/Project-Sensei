@@ -1,9 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { Rocket, ShieldCheck, Users, BarChart3, ChevronRight } from 'lucide-react';
 
 const Landing = () => {
+  const { user } = useAuth();
   return (
     <div className="page-transition">
       {/* Hero Section */}
@@ -30,12 +32,20 @@ const Landing = () => {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="mt-10 flex flex-wrap justify-center gap-4"
         >
-          <Link to="/register" className="btn-primary px-8 py-4 text-lg">
-            Get Started Free <ChevronRight size={20} />
-          </Link>
-          <Link to="/feasibility" className="glass flex items-center gap-2 px-8 py-4 text-lg text-white no-underline transition-opacity hover:opacity-90">
-            Try AI Advisory
-          </Link>
+          {user ? (
+            <Link to="/dashboard" className="btn-primary px-8 py-4 text-lg">
+              Go to Dashboard <ChevronRight size={20} />
+            </Link>
+          ) : (
+            <>
+              <Link to="/register" className="btn-primary px-8 py-4 text-lg">
+                Get Started Free <ChevronRight size={20} />
+              </Link>
+              <Link to="/feasibility" className="glass flex items-center gap-2 px-8 py-4 text-lg text-white no-underline transition-opacity hover:opacity-90">
+                Try AI Advisory
+              </Link>
+            </>
+          )}
         </motion.div>
       </section>
 
@@ -62,6 +72,29 @@ const Landing = () => {
             title="Investor Ready"
             description="Optimize your pitch decks and financial projections with AI-curated insights."
           />
+        </div>
+      </section>
+
+      {/* Partners Section */}
+      <section className="container mx-auto mt-20 px-6 pb-24 text-center">
+        <h2 className="mb-4 text-4xl font-bold text-white uppercase tracking-widest text-[0.85rem] text-sensai-secondary">
+          Partners
+        </h2>
+        <h3 className="mb-6 text-4xl font-bold text-white">Share Your Expertise</h3>
+        <p className="mx-auto mb-12 max-w-2xl text-lg text-sensai-muted">
+          Join our network of industry leaders and capital providers helping the next generation of founders.
+        </p>
+        <div className="flex flex-wrap justify-center gap-6">
+          <Link to="/register" className="glass group relative overflow-hidden p-8 text-left transition-all hover:border-sensai-primary md:w-[350px]">
+            <Users className="mb-4 text-sensai-primary transition-transform group-hover:scale-110" size={32} />
+            <h4 className="mb-2 text-xl font-bold text-white">Join as Mentor</h4>
+            <p className="text-sm text-sensai-muted">Guide early-stage founders and share your industry insights.</p>
+          </Link>
+          <Link to="/register" className="glass group relative overflow-hidden p-8 text-left transition-all hover:border-sensai-secondary md:w-[350px]">
+            <Rocket className="mb-4 text-sensai-secondary transition-transform group-hover:scale-110" size={32} />
+            <h4 className="mb-2 text-xl font-bold text-white">Join as Investor</h4>
+            <p className="text-sm text-sensai-muted">Discover high-potential startups and scale your portfolio.</p>
+          </Link>
         </div>
       </section>
     </div>

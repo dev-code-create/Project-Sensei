@@ -9,6 +9,7 @@ const forumPostSchema = new mongoose.Schema(
     },
     title: { type: String, required: true },
     content: { type: String, required: true },
+    category: { type: String, default: 'General' },
     tags: [{ type: String }],
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     comments: [

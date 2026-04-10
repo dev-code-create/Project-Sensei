@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import api from '../services/api';
@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   Download
 } from 'lucide-react';
+import { jsPDF } from 'jspdf';
 
 const AIAdvisory = () => {
   const [searchParams] = useSearchParams();
@@ -27,6 +28,10 @@ const AIAdvisory = () => {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
+  const [error, setError] = useState(null);
+  const [exporting, setExporting] = useState(false);
+  
+  const reportRef = useRef();
 
   useEffect(() => {
     if (reportId) {
@@ -49,15 +54,175 @@ const AIAdvisory = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
     try {
       const { data } = await api.post('/feasibility/generate', formData);
       setReport(data);
     } catch (err) {
       console.error('Error generating report', err);
+      setError(err.response?.data?.message || 'Failed to generate report. Please check your AI connection and try again.');
     } finally {
       setLoading(false);
     }
   };
+
+  const handleExportPDF = () => {
+    if (!report) return;
+    setExporting(true);
+
+    try {
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const pw = doc.internal.pageSize.getWidth();   // 210mm
+      const ph = doc.internal.pageSize.getHeight();  // 297mm
+      const pad = 15;
+      const contentW = pw - pad * 2;
+
+      // ─── Colour Palette ───────────────────────────────────────────────
+      const BG        = [2,   6,  23];   // #020617
+      const CARD      = [15,  23,  42];  // #0f172a
+      const BORDER    = [51,  65,  85];  // #334155
+      const PRIMARY   = [167, 139, 250]; // #a78bfa violet-400
+      const SECONDARY = [34,  211, 238]; // #22d3ee cyan-400
+      const EMERALD   = [74,  222, 128]; // #4ade80
+      const RED       = [248, 113, 113]; // #f87171
+      const WHITE     = [255, 255, 255];
+      const MUTED     = [241, 245, 249]; // #f1f5f9
+
+      // ─── Helpers ──────────────────────────────────────────────────────
+      const setFill   = (c) => doc.setFillColor(...c);
+      const setStroke = (c) => doc.setDrawColor(...c);
+      const setTxt    = (c) => doc.setTextColor(...c);
+
+      // Rounded rect helper
+      const roundRect = (x, y, w, h, r = 4) => {
+        doc.roundedRect(x, y, w, h, r, r, 'FD');
+      };
+
+      // Text wrap helper — returns new y position after drawing
+      const drawWrapped = (text, x, y, maxW, lineH = 5) => {
+        const lines = doc.splitTextToSize(text || '', maxW);
+        doc.text(lines, x, y);
+        return y + lines.length * lineH;
+      };
+
+      let y = 0; // current cursor
+
+      // ─── FULL PAGE BACKGROUND ─────────────────────────────────────────
+      setFill(BG);
+      setStroke(BG);
+      doc.rect(0, 0, pw, ph, 'F');
+
+      // ─── HEADER CARD ──────────────────────────────────────────────────
+      const headerH = 46;
+      setFill(CARD); setStroke(BORDER);
+      doc.setLineWidth(0.3);
+      roundRect(pad, pad, contentW, headerH, 5);
+
+      // Startup name
+      setTxt(WHITE);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(22);
+      doc.text(report.startupName || 'Report', pad + 8, pad + 14);
+
+      // Generated date
+      setTxt(MUTED);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      const dateStr = `Generated on ${new Date(report.createdAt || Date.now()).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' })}`;
+      doc.text(dateStr, pad + 8, pad + 21);
+
+      // Score badge (right side)
+      const score = report.aiReport?.overallScore ?? 0;
+      const scorePct = Math.min(100, Math.max(0, score));
+      const badgeColor = scorePct >= 70 ? EMERALD : scorePct >= 40 ? PRIMARY : RED;
+      setTxt(WHITE);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.text('VIABILITY SCORE', pw - pad - 30, pad + 12, { align: 'center' });
+      setTxt(badgeColor);
+      doc.setFontSize(32);
+      doc.text(`${score}`, pw - pad - 30, pad + 35, { align: 'center' });
+
+      y = pad + headerH + 6;
+
+      // ─── SECTION HELPER ───────────────────────────────────────────────
+      const sections = [
+        { label: 'Market Analysis',     icon: '◈', color: PRIMARY,   key: 'marketAnalysis' },
+        { label: 'Competitor Overview', icon: '◎', color: SECONDARY, key: 'competitorOverview' },
+        { label: 'Revenue Projection',  icon: '◆', color: EMERALD,   key: 'revenueProjection' },
+        { label: 'Risk Assessment',     icon: '⚠', color: RED,       key: 'riskAssessment' },
+      ];
+
+      for (const sec of sections) {
+        if (y > ph - 30) {
+          // New page with same background
+          doc.addPage();
+          setFill(BG); setStroke(BG);
+          doc.rect(0, 0, pw, ph, 'F');
+          y = pad;
+        }
+
+        const text   = report.aiReport?.[sec.key] || 'N/A';
+        const lines  = doc.setFont('helvetica', 'normal').setFontSize(9)
+                          .splitTextToSize(text, contentW - 16);
+        const cardH  = 6 + 6 + lines.length * 4.8 + 6;
+
+        // Page-break inside card
+        if (y + cardH > ph - pad) {
+          doc.addPage();
+          setFill(BG); setStroke(BG);
+          doc.rect(0, 0, pw, ph, 'F');
+          y = pad;
+        }
+
+        // Card background
+        setFill(CARD); setStroke(BORDER);
+        doc.setLineWidth(0.3);
+        roundRect(pad, y, contentW, cardH, 4);
+
+        // Coloured left accent bar
+        setFill(sec.color); setStroke(sec.color);
+        doc.roundedRect(pad, y, 3, cardH, 1.5, 1.5, 'F');
+
+        // Section title
+        setTxt(sec.color);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.text(sec.label, pad + 8, y + 8);
+
+        // Body text
+        setTxt(MUTED);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.text(lines, pad + 8, y + 15);
+
+        y += cardH + 5;
+      }
+
+      // ─── FOOTER ───────────────────────────────────────────────────────
+      const totalPages = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        setTxt([71, 85, 105]); // slate-500
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.text(
+          `Project Sensei  •  AI Feasibility Report  •  Page ${i} of ${totalPages}`,
+          pw / 2, ph - 6,
+          { align: 'center' }
+        );
+      }
+
+      doc.save(`${report.startupName}_Feasibility_Report.pdf`);
+    } catch (err) {
+      console.error('PDF Export Error:', err);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+
+
 
   if (fetching) return <div className="flex justify-center py-40"><Loader2 className="animate-spin text-sensai-primary" size={48} /></div>;
 
@@ -77,6 +242,17 @@ const AIAdvisory = () => {
               <h1 className="mb-2 text-4xl font-bold text-white md:text-5xl">AI Feasibility Advisory</h1>
               <p className="text-sensai-muted">Get a deep-dive analysis of your startup idea powered by GPT-4.</p>
             </header>
+
+            {error && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="mb-8 rounded-xl bg-red-500/10 border border-red-500/20 p-4 text-red-500 flex items-center gap-3"
+              >
+                <ShieldAlert size={20} className="shrink-0" />
+                <p className="text-sm font-medium">{error}</p>
+              </motion.div>
+            )}
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-8">
               <div className="flex flex-col gap-2">
@@ -126,14 +302,23 @@ const AIAdvisory = () => {
             key="report"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="page-transition"
+            className={`page-transition ${exporting ? 'p-12' : ''}`}
+            ref={reportRef}
           >
-            <div className="mb-8 flex items-center justify-between">
-              <button onClick={() => setReport(null)} className="flex items-center gap-2 border-none bg-transparent text-sensai-muted transition-colors hover:text-white">
+            <div className={`mb-8 flex items-center justify-between ${exporting ? 'hidden' : ''}`}>
+              <button 
+                onClick={() => setReport(null)} 
+                className="flex items-center gap-2 border-none bg-transparent text-sensai-muted transition-colors hover:text-white"
+              >
                 <ChevronLeft size={20} /> Back to Generator
               </button>
-              <button className="glass flex items-center gap-2 border-none p-2 px-4 font-semibold text-white transition-opacity hover:opacity-80">
-                 <Download size={18} /> Export PDF
+              <button 
+                onClick={handleExportPDF}
+                disabled={exporting}
+                className="glass flex items-center gap-2 border-none p-2 px-4 font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-50"
+              >
+                 {exporting ? <Loader2 className="animate-spin" size={18} /> : <Download size={18} />}
+                 {exporting ? 'Exporting...' : 'Export PDF'}
               </button>
             </div>
 

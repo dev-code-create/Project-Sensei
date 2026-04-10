@@ -1,21 +1,24 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-sensai-bg: #0f172a;
+  --color-sensai-card: rgba(30, 41, 59, 0.7);
+  --color-sensai-primary: #8b5cf6;
+  --color-sensai-secondary: #06b6d4;
+  --color-sensai-text: #f8fafc;
+  --color-sensai-muted: #94a3b8;
+  --color-glass: rgba(255, 255, 255, 0.1);
+  
+  --font-heading: "Outfit", sans-serif;
+  --font-body: "Inter", sans-serif;
+  
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  
+  --background-image-sensai-gradient: radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.1) 0px, transparent 50%);
+}
 
 @layer base {
-  :root {
-    --bg-dark: #0f172a;
-    --bg-card: rgba(30, 41, 59, 0.7);
-    --accent-primary: #8b5cf6;
-    --accent-secondary: #06b6d4;
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --border-glass: rgba(255, 255, 255, 0.1);
-    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  }
-
   body {
     @apply bg-sensai-bg text-sensai-text font-body antialiased min-h-screen bg-sensai-gradient;
   }
@@ -61,3 +64,80 @@
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* AGGRESSIVE PDF Export Compatibility: 
+   Total override of modern OKLCH/OKLAB colors with legacy-style HEX values.
+   This prevents html2canvas/html2pdf.js from crashing on modern color functions. 
+*/
+/* GLOBAL NUCLEAR FIX: Apply these to body when .pdf-export-active is present 
+   to ensure NO modern color functions leak from anywhere in the document. */
+body.pdf-export-active {
+  background-color: #020617 !important;
+}
+
+.pdf-export-active .pdf-mode {
+  background-color: #020617 !important; 
+  color: #ffffff !important;
+  font-family: 'Inter', sans-serif !important;
+  min-height: 100vh !important;
+}
+
+/* Force standard colors on everything inside pdf-mode */
+.pdf-export-active * {
+  --tw-text-opacity: 1 !important;
+  --tw-bg-opacity: 1 !important;
+  --tw-border-opacity: 1 !important;
+  text-shadow: none !important; 
+  box-shadow: none !important;
+}
+
+/* FIX: Viability Score visibility (was using transparent gradient) */
+.pdf-export-active .text-transparent {
+  color: #a78bfa !important;
+  -webkit-text-fill-color: #a78bfa !important;
+}
+.pdf-export-active .bg-clip-text {
+  background-clip: border-box !important;
+  -webkit-background-clip: border-box !important;
+  background-image: none !important;
+}
+
+/* Theme Elements */
+.pdf-export-active .glass { 
+  background-color: #0f172a !important; 
+  border: 1px solid #334155 !important; /* Brighter border for better definition */
+  border-radius: 16px !important;
+  backdrop-filter: none !important; 
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Specific Utility Overrides */
+.pdf-export-active .text-sensai-primary, .pdf-export-active .text-violet-400 { color: #a78bfa !important; }
+.pdf-export-active .text-sensai-secondary, .pdf-export-active .text-cyan-400 { color: #22d3ee !important; }
+.pdf-export-active .text-emerald-400 { color: #4ade80 !important; }
+.pdf-export-active .text-red-400, .pdf-export-active .text-rose-400 { color: #f87171 !important; }
+.pdf-export-active .text-sensai-text, .pdf-export-active .text-white, .pdf-export-active h1, .pdf-export-active h2, .pdf-export-active h3 { color: #ffffff !important; }
+.pdf-export-active .text-sensai-muted, .pdf-export-active .text-slate-400, .pdf-export-active p { color: #f1f5f9 !important; } /* High contrast text */
+
+/* Score and Gradients */
+.pdf-export-active .bg-gradient-to-br {
+  background-image: none !important;
+  background-color: transparent !important;
+  color: #a78bfa !important;
+  font-weight: 900 !important;
+}
+
+/* Backgrounds - remove all transparency */
+.pdf-export-active .bg-white\/5 { background-color: #ffffff20 !important; }
+.pdf-export-active .bg-emerald-500\/10 { background-color: #065f46 !important; } /* Solid dark green */
+.pdf-export-active .bg-red-500\/10 { background-color: #7f1d1d !important; } /* Solid dark red */
+.pdf-export-active .bg-slate-900\/50 { background-color: #0f172a !important; }
+
+.pdf-export-active svg {
+  stroke-width: 2.5 !important;
+}
+
+
+
+
+

@@ -9,6 +9,7 @@ const Register = () => {
     name: '',
     email: '',
     password: '',
+    role: 'founder',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -57,6 +58,25 @@ const Register = () => {
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-sensai-muted">I am a...</label>
+            <div className="grid grid-cols-3 gap-3">
+              {['founder', 'mentor', 'investor'].map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => setFormData({ ...formData, role: r })}
+                  className={`rounded-xl border py-3 text-xs font-bold uppercase tracking-wider transition-all
+                    ${formData.role === r 
+                      ? 'border-sensai-primary bg-sensai-primary/20 text-sensai-primary' 
+                      : 'border-white/10 bg-white/5 text-sensai-muted hover:bg-white/10'}`}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-sensai-muted">Full Name</label>
             <div className="relative">

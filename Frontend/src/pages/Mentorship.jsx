@@ -5,7 +5,6 @@ import {
   Search, 
   MapPin, 
   Star, 
-  Linkedin, 
   MessageCircle, 
   Award,
   Filter,
@@ -38,7 +37,7 @@ const Mentorship = () => {
 
   const filteredMentors = mentors.filter(m => 
     (filter === 'All' || m.expertise.includes(filter)) &&
-    (m.name.toLowerCase().includes(searchTerm.toLowerCase()) || m.bio.toLowerCase().includes(searchTerm.toLowerCase()))
+    (m.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) || m.user?.bio?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
@@ -91,19 +90,19 @@ const Mentorship = () => {
               <div className="flex items-center gap-5">
                 <div className="relative">
                   <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-sensai-primary to-sensai-secondary text-2xl font-bold text-white">
-                    {mentor.name.charAt(0)}
+                    {mentor.user?.name?.charAt(0) || 'M'}
                   </div>
                   <div className="absolute -bottom-1.5 -right-1.5 rounded-full border-4 border-slate-900 bg-emerald-500 p-1">
                     <CheckCircle2 size={12} className="text-white" />
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-white leading-tight">{mentor.name}</h3>
-                  <p className="mt-1 text-sm font-bold text-sensai-secondary uppercase tracking-widest">{mentor.title || 'Expert Advisor'}</p>
+                  <h3 className="text-2xl font-bold text-white leading-tight">{mentor.user?.name || 'Expert Advisor'}</h3>
+                  <p className="mt-1 text-sm font-bold text-sensai-secondary uppercase tracking-widest">{mentor.title || 'Mentor'}</p>
                 </div>
               </div>
 
-              <p className="flex-1 text-sm leading-relaxed text-sensai-muted">{mentor.bio}</p>
+              <p className="flex-1 text-sm leading-relaxed text-sensai-muted">{mentor.user?.bio || 'No bio available yet.'}</p>
 
               <div className="flex flex-wrap gap-2">
                 {mentor.expertise.map((exp, i) => (

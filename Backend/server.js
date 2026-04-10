@@ -1,3 +1,4 @@
+// Final CORS Fix Version 1.0.2
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
@@ -13,6 +14,14 @@ import feasibilityRoutes from "./routes/feasibilityRoutes.js";
 import forumRoutes from "./routes/forumRoutes.js";
 import { errorHandler } from "./middlewares/errorMiddleware.js";
 import { handleChatEvents } from "./socket/chatHandler.js";
+
+console.log("DB_DIAGNOSTIC: Loading URI...");
+if (process.env.MONGO_URI) {
+  console.log(`DB_DIAGNOSTIC: URI Length: ${process.env.MONGO_URI.length}`);
+  console.log(`DB_DIAGNOSTIC: URI Starts with: ${process.env.MONGO_URI.substring(0, 15)}...`);
+} else {
+  console.log("DB_DIAGNOSTIC: MONGO_URI is UNDEFINED. Check your .env file path.");
+}
 
 connectDB();
 
@@ -35,8 +44,10 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/mentors", mentorRoutes);
 app.use("/api/sessions", sessionRoutes);
+console.log("ROUTER_LOG: Mounting feasibility routes at /api/feasibility");
 app.use("/api/feasibility", feasibilityRoutes);
 app.use("/api/forum", forumRoutes);
+
 app.use("/api/chat", chatRoutes);
 
 // Basic Health Check Route
