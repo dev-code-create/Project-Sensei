@@ -1,7 +1,13 @@
 import OpenAI from "openai";
 import ChatSession from "../model/ChatSession.js";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const isGeminiKey = process.env.OPENAI_API_KEY?.startsWith("AIzaSy");
+const openai = new OpenAI({ 
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: isGeminiKey 
+    ? "https://generativelanguage.googleapis.com/v1beta/openai" 
+    : undefined 
+});
 
 // System prompt — this is what makes it a "Startup Sensai" advisor
 const SYSTEM_PROMPT = `
@@ -42,7 +48,7 @@ export const startChatSession = async (req, res, next) => {
     `;
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: isGeminiKey ? "gemini-flash-latest" : "gpt-4o-mini",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: initialUserMessage },
@@ -108,7 +114,7 @@ export const sendMessage = async (req, res, next) => {
     conversationHistory.push({ role: "user", content: message });
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: isGeminiKey ? "gemini-flash-latest" : "gpt-4o-mini",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         ...conversationHistory,
@@ -220,6 +226,33 @@ export const getChatSessionById = async (req, res, next) => {
     if (session.user._id.toString() !== req.user._id.toString()) {
       res.status(403);
       throw new Error("Not authorized");
+    }
+
+    res.json(session);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @route GET /api/chat/sensai/widget
+// Get or create a persistent "Sensai Widget" session for the founder
+export const getWidgetSession = async (req, res, next) => {
+  try {
+    let session = await ChatSession.findOne({ 
+      user: req.user._id, 
+      startupName: "Sensai Widget" 
+    });
+
+    if (!session) {
+      const initialReply = "Hello! I'm Sensai, your quick-access startup assistant. How can I help you today?";
+      session = await ChatSession.create({
+        user: req.user._id,
+        startupName: "Sensai Widget",
+        ideaDescription: "General startup advice and support via side widget",
+        messages: [
+          { role: "assistant", content: initialReply }
+        ]
+      });
     }
 
     res.json(session);

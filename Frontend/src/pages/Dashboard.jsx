@@ -61,8 +61,10 @@ const Dashboard = () => {
   };
 
   const stats = [
-    { label: 'Startup Score', value: reports[0]?.aiReport?.overallScore || '--', icon: <TrendingUp className="text-sensai-primary" />, trend: '+5%' },
-    { label: 'AI Reports', value: reports.length, icon: <FileText className="text-sensai-secondary" />, trend: 'New' },
+    ...(user?.role === 'founder' ? [
+      { label: 'Startup Score', value: reports[0]?.aiReport?.overallScore || '--', icon: <TrendingUp className="text-sensai-primary" />, trend: '+5%' },
+      { label: 'AI Reports', value: reports.length, icon: <FileText className="text-sensai-secondary" />, trend: 'New' },
+    ] : []),
     { label: 'Mentor Sessions', value: '0', icon: <Users className="text-emerald-400" />, trend: 'Upcoming' },
     { label: 'Forum Posts', value: '0', icon: <MessageSquare className="text-amber-400" />, trend: 'Activity' },
   ];
@@ -97,55 +99,57 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        {/* Recent Reports */}
-        <section className="lg:col-span-2">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-white">Recent AI Reports</h2>
-            <Link to="/feasibility" className="flex items-center gap-1 text-sm font-semibold text-sensai-primary transition-colors hover:text-sensai-secondary">
-              View All <ChevronRight size={16} />
-            </Link>
-          </div>
-          
-          <div className="flex flex-col gap-4">
-            {loading ? (
-              <p className="py-10 text-center text-sensai-muted">Loading reports...</p>
-            ) : reports.length > 0 ? (
-              reports.map((report) => (
-                <Link key={report._id} to={`/feasibility?id=${report._id}`} className="no-underline">
-                  <div className="glass glass-hover flex items-center justify-between p-5">
-                    <div className="flex items-center gap-4">
-                      <button 
-                        onClick={(e) => handleDeleteReport(e, report._id, report.startupName)}
-                        className="rounded-lg p-1.5 text-sensai-muted transition-colors hover:bg-red-500/10 hover:text-red-500"
-                        title="Delete Report"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                      <div className="rounded-xl bg-sensai-primary/10 p-2.5">
-                        <BarChart className="text-sensai-primary" size={20} />
+        {/* Recent Reports Section (Founders only) */}
+        {user?.role === 'founder' && (
+          <section className="lg:col-span-2">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-white">Recent AI Reports</h2>
+              <Link to="/feasibility" className="flex items-center gap-1 text-sm font-semibold text-sensai-primary transition-colors hover:text-sensai-secondary">
+                View All <ChevronRight size={16} />
+              </Link>
+            </div>
+            
+            <div className="flex flex-col gap-4">
+              {loading ? (
+                <p className="py-10 text-center text-sensai-muted">Loading reports...</p>
+              ) : reports.length > 0 ? (
+                reports.map((report) => (
+                  <Link key={report._id} to={`/feasibility?id=${report._id}`} className="no-underline">
+                    <div className="glass glass-hover flex items-center justify-between p-5">
+                      <div className="flex items-center gap-4">
+                        <button 
+                          onClick={(e) => handleDeleteReport(e, report._id, report.startupName)}
+                          className="rounded-lg p-1.5 text-sensai-muted transition-colors hover:bg-red-500/10 hover:text-red-500"
+                          title="Delete Report"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                        <div className="rounded-xl bg-sensai-primary/10 p-2.5">
+                          <BarChart className="text-sensai-primary" size={20} />
+                        </div>
+                        <div>
+                          <h4 className="text-lg font-bold text-white">{report.startupName}</h4>
+                          <p className="text-xs text-sensai-muted">Generated on {new Date(report.createdAt).toLocaleDateString()}</p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="text-lg font-bold text-white">{report.startupName}</h4>
-                        <p className="text-xs text-sensai-muted">Generated on {new Date(report.createdAt).toLocaleDateString()}</p>
+                      <div className="text-right">
+                        <div className="text-xl font-bold text-sensai-primary">{report.aiReport?.overallScore}%</div>
+                        <p className="text-[0.65rem] font-bold uppercase tracking-widest text-sensai-muted">Viability</p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-xl font-bold text-sensai-primary">{report.aiReport?.overallScore}%</div>
-                      <p className="text-[0.65rem] font-bold uppercase tracking-widest text-sensai-muted">Viability</p>
-                    </div>
-                  </div>
-                </Link>
-              ))
-            ) : (
-              <div className="glass flex flex-col items-center justify-center border-dashed p-12 text-center">
-                <p className="mb-6 text-sensai-muted">You haven't generated any AI feasibility reports yet.</p>
-                <Link to="/feasibility" className="btn-primary">
-                  <Plus size={18} /> Generate Your First Report
-                </Link>
-              </div>
-            )}
-          </div>
-        </section>
+                  </Link>
+                ))
+              ) : (
+                <div className="glass flex flex-col items-center justify-center border-dashed p-12 text-center">
+                  <p className="mb-6 text-sensai-muted">You haven't generated any AI feasibility reports yet.</p>
+                  <Link to="/feasibility" className="btn-primary">
+                    <Plus size={18} /> Generate Your First Report
+                  </Link>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* Quick Actions / Activity */}
         <aside className="flex flex-col gap-8">
@@ -156,9 +160,11 @@ const Dashboard = () => {
                   <Clock size={20} />
                   <span className="text-sm font-medium">No sessions scheduled</span>
                </div>
-               <Link to="/mentorship" className="btn-primary mt-2 w-full text-sm">
-                  Find a Mentor
-               </Link>
+               {user?.role === 'founder' && (
+                 <Link to="/mentorship" className="btn-primary mt-2 w-full text-sm">
+                    Find a Mentor
+                 </Link>
+               )}
             </div>
           </section>
           

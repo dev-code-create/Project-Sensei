@@ -18,10 +18,13 @@ export const applyAsMentor = async (req, res, next) => {
       expertise,
       hourlyRate,
       availability,
+      isApproved: true,
     });
 
-    // Update user role to mentor
-    await User.findByIdAndUpdate(req.user._id, { role: "mentor" });
+    // Ensure role is updated to mentor
+    if (req.user.role !== "mentor") {
+      await User.findByIdAndUpdate(req.user._id, { role: "mentor" });
+    }
 
     res.status(201).json(mentor);
   } catch (error) {

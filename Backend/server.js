@@ -12,6 +12,7 @@ import mentorRoutes from "./routes/mentorRoutes.js";
 import sessionRoutes from "./routes/sessionRoutes.js";
 import feasibilityRoutes from "./routes/feasibilityRoutes.js";
 import forumRoutes from "./routes/forumRoutes.js";
+import messageRoutes from "./routes/messageRoutes.js";
 import { errorHandler } from "./middlewares/errorMiddleware.js";
 import { handleChatEvents } from "./socket/chatHandler.js";
 
@@ -28,16 +29,28 @@ connectDB();
 const app = express();
 const server = http.createServer(app);
 
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5175",
+].filter(Boolean);
+
 // Configure Socket.IO for real-time mentorship chat
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
 app.use(express.json());
 
 // Routes
@@ -47,6 +60,7 @@ app.use("/api/sessions", sessionRoutes);
 console.log("ROUTER_LOG: Mounting feasibility routes at /api/feasibility");
 app.use("/api/feasibility", feasibilityRoutes);
 app.use("/api/forum", forumRoutes);
+app.use("/api/messages", messageRoutes);
 
 app.use("/api/chat", chatRoutes);
 

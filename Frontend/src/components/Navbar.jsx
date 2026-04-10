@@ -24,8 +24,13 @@ const Navbar = () => {
           <>
             <div className="hidden items-center gap-6 md:flex">
               <Link to="/dashboard" className="text-sm font-medium text-sensai-muted no-underline transition-colors hover:text-white">Dashboard</Link>
-              <Link to="/feasibility" className="text-sm font-medium text-sensai-muted no-underline transition-colors hover:text-white">AI Advisory</Link>
-              <Link to="/mentorship" className="text-sm font-medium text-sensai-muted no-underline transition-colors hover:text-white">Mentors</Link>
+              {user?.role === 'founder' && (
+                <Link to="/feasibility" className="text-sm font-medium text-sensai-muted no-underline transition-colors hover:text-white">AI Advisory</Link>
+              )}
+              {['founder', 'mentor'].includes(user?.role) && (
+                 <Link to="/mentorship" className="text-sm font-medium text-sensai-muted no-underline transition-colors hover:text-white">Mentors</Link>
+              )}
+              <Link to="/messages" className="text-sm font-medium text-sensai-muted no-underline transition-colors hover:text-white">Messages</Link>
               <Link to="/forum" className="text-sm font-medium text-sensai-muted no-underline transition-colors hover:text-white">Forum</Link>
             </div>
             <div className="flex items-center gap-4 border-l border-glass pl-6 ml-2">

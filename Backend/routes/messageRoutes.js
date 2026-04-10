@@ -1,0 +1,17 @@
+import express from "express";
+import { protect } from "../middlewares/authMiddleware.js";
+import {
+  getConversations,
+  getConversationMessages,
+  sendMessage,
+  startConversation,
+} from "../controllers/messageController.js";
+
+const router = express.Router();
+
+router.get("/conversations", protect, getConversations);
+router.get("/history/:conversationId", protect, getConversationMessages);
+router.post("/send", protect, sendMessage);
+router.get("/start/:receiverId", protect, startConversation);
+
+export default router;
