@@ -29,8 +29,10 @@ connectDB();
 const app = express();
 const server = http.createServer(app);
 
+const clientUrl = process.env.CLIENT_URL ? process.env.CLIENT_URL.replace(/\/$/, "") : null;
+
 const allowedOrigins = [
-  process.env.CLIENT_URL,
+  clientUrl,
   "http://localhost:3000",
   "http://localhost:5173",
   "http://localhost:5174",
