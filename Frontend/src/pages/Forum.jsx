@@ -15,9 +15,12 @@ import {
   X,
   Trash2,
   AlertCircle,
+  MessageCircle
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Forum = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -103,6 +106,24 @@ const Forum = () => {
       setPostToDelete(null);
     } catch (err) {
       console.error("Error deleting post", err);
+    }
+  };
+
+  const handleContactUser = async (targetUserId) => {
+    if (targetUserId === user?._id) return; // Can't chat with self
+    try {
+      const { data } = await api.get(`/messages/start/${targetUserId}`);
+      if (data.conversation) {
+        navigate(`/messages/${data.conversation._id}`);
+      } else {
+        const res = await api.post('/messages/send', { 
+          receiverId: targetUserId, 
+          text: `Hi! I saw your post on the Forum and wanted to reach out.` 
+        });
+        navigate(`/messages/${res.data.conversationId}`);
+      }
+    } catch (err) {
+      console.error("Error starting conversation", err);
     }
   };
 
@@ -200,13 +221,22 @@ const Forum = () => {
                       </p>
 
                       <div className="flex items-center justify-between border-t border-glass pt-6">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-sensai-muted">
+                        <div 
+                          className="flex items-center gap-3 cursor-pointer group/author"
+                          onClick={() => handleContactUser(post.author?._id)}
+                          title="Send direct message"
+                        >
+                          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-sensai-muted group-hover/author:bg-sensai-primary/20 group-hover/author:text-sensai-primary transition-colors">
                             <UserIcon size={18} />
                           </div>
-                          <span className="text-sm font-bold text-white">
-                            {post.author?.name || "Founder"}
-                          </span>
+                          <div className="flex flex-col">
+                            <span className="text-sm font-bold text-white group-hover/author:text-sensai-primary transition-colors">
+                              {post.author?.name || "Founder"}
+                            </span>
+                            <span className="text-[10px] text-sensai-muted flex items-center gap-1 opacity-0 group-hover/author:opacity-100 transition-opacity">
+                              <MessageCircle size={10} /> Click to chat
+                            </span>
+                          </div>
                         </div>
 
                         <div className="flex gap-6">
@@ -293,10 +323,17 @@ const Forum = () => {
                                         <UserIcon size={14} />
                                       </div>
                                       <div className="flex-1 rounded-2xl bg-white/5 p-4 group-hover:bg-white/[0.08] transition-colors">
-                                        <div className="mb-1 flex items-center justify-between">
-                                          <span className="text-xs font-bold text-white">
-                                            {comment.user?.name || "Founder"}
-                                          </span>
+                                        <div 
+                                          className="mb-1 flex items-center justify-between cursor-pointer group/comment-author"
+                                          onClick={() => handleContactUser(comment.user?._id)}
+                                          title="Send direct message"
+                                        >
+                                          <div className="flex items-center gap-1.5">
+                                            <span className="text-xs font-bold text-white group-hover/comment-author:text-sensai-primary transition-colors">
+                                              {comment.user?.name || "Founder"}
+                                            </span>
+                                            <MessageCircle size={10} className="text-sensai-primary opacity-0 group-hover/comment-author:opacity-100 transition-opacity" />
+                                          </div>
                                           <span className="text-[10px] text-sensai-muted">
                                             {new Date(comment.createdAt).toLocaleDateString()}
                                           </span>
